@@ -347,6 +347,31 @@
             font-size: 1.5rem;
             font-weight: bold;
         }
+        /* New styles for completion controls */
+        .completion-message .completion-text {
+            margin-bottom: 10px;
+            font-size: 1.1rem;
+            color: #fff;
+        }
+        .completion-message .completion-buttons {
+            display: flex;
+            justify-content: center;
+            gap: 12px;
+            margin-top: 8px;
+        }
+        .completion-message .completion-buttons button {
+            padding: 8px 14px;
+            border-radius: 8px;
+            border: none;
+            cursor: pointer;
+            font-weight: 600;
+            background: rgba(255,255,255,0.12);
+            color: #fff;
+            box-shadow: none;
+        }
+        .completion-message .completion-buttons button:hover {
+            background: rgba(255,255,255,0.18);
+        }
 
         .firework {
             position: fixed;
@@ -451,7 +476,12 @@
             <button id="reset-btn">Làm Lại</button>
         </div>
         <div class="completion-message" id="completion-message">
-            Chúc mừng em! Chúng ta đã hoàn thành bức hình tình yêu ❤️
+            <div class="completion-text">Chúc mừng em! Chúng ta đã hoàn thành bức hình tình yêu ❤️</div>
+            <div class="completion-text">chúc mừng em , iuuu em rấc nhìu</div>
+            <div class="completion-buttons">
+                <button id="completion-reset-btn">Làm lại</button>
+                <button id="completion-back-btn">Về đầu</button>
+            </div>
         </div>
     </div>
 </div>
@@ -583,6 +613,8 @@
         const imageUpload = document.getElementById('real-image-upload');
         const originalImage = document.getElementById('original-image');
         const removeBtn = document.getElementById('remove-image-btn');
+        const completionResetBtn = document.getElementById('completion-reset-btn');
+        const completionBackBtn = document.getElementById('completion-back-btn');
 
         // Xử lý upload ảnh
         imageUpload.onchange = function(e) {
@@ -795,6 +827,20 @@
                 document.getElementById('completion-message').style.display = 'none';
             }
         });
+
+        // completion buttons handlers (inside initializePuzzle so createPuzzlePieces is in scope)
+        if (completionResetBtn) {
+            completionResetBtn.onclick = function() {
+                createPuzzlePieces(currentImage);
+            };
+        }
+        if (completionBackBtn) {
+            completionBackBtn.onclick = function() {
+                // hide puzzle page and go back to main page
+                document.getElementById('puzzle-page').style.display = 'none';
+                document.getElementById('main-page').style.display = 'block';
+            };
+        }
 
         // Sự kiện nút làm lại
         resetBtn.onclick = function() {
