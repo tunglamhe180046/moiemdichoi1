@@ -1003,12 +1003,6 @@
     // Xử lý nhạc nền
     function setupMusicPlayer() {
         const audio = document.getElementById('background-music');
-        // const playBtn = document.getElementById('play-btn');
-        // const prevBtn = document.getElementById('prev-btn');
-        // const nextBtn = document.getElementById('next-btn');
-        // const muteBtn = document.getElementById('mute-btn');
-        // const volumeSlider = document.getElementById('volume-slider');
-        // const musicInfo = document.getElementById('music-info');
 
         let isPlaying = false;
 
@@ -1019,69 +1013,63 @@
 
         function updateSong() {
             audio.src = songs[currentSongIndex].src;
-            // musicInfo.textContent = songs[currentSongIndex].name;
             if (isPlaying) {
                 audio.play().catch(()=>{ /* ignore */ });
             }
         }
 
         // Ensure audio settings for autoplay attempt
-        audio.autoplay = true;
         audio.preload = 'auto';
         audio.volume = 0.5;
-        audio.muted = false;
 
-        // Try to play immediately (will be caught if browser blocks autoplay)
+        // Strategy:
+        // 1) Try muted autoplay immediately (muted autoplay is usually allowed).
+        // 2) If success, keep playing muted and wait for first user gesture to unmute.
+        // 3) If blocked, listen once for user's first gesture to play & unmute.
+        audio.muted = true;
         audio.play().then(() => {
             isPlaying = true;
-            // If you had a play/pause UI, update it here (UI is hidden)
-        }).catch(error => {
-            console.log('Tự động phát nhạc bị chặn:', error);
-            isPlaying = false;
-        });
-
-        // Nút bài trước
-        // prevBtn.addEventListener('click', function() {
-        //     currentSongIndex = (currentSongIndex - 1 + songs.length) % songs.length;
-        //     updateSong();
-        // });
-
-        // Nút bài tiếp theo
-        // nextBtn.addEventListener('click', function() {
-        //     currentSongIndex = (currentSongIndex + 1) % songs.length;
-        //     updateSong();
-        // });
-
-        // Nút tắt tiếng
-        // muteBtn.addEventListener('click', function() {
-        //     audio.muted = !audio.muted;
-        //     muteBtn.innerHTML = audio.muted ? '🔇' : '🔊';
-        // });
-
-        // Điều chỉnh âm lượng
-        // volumeSlider.addEventListener('input', function() {
-        //     audio.volume = volumeSlider.value;
-        // });
-
-        // Tự động phát nhạc khi trang được tải
-        window.addEventListener('load', function() {
-            audio.volume = 0.5;
-            // Tự động phát nhạc (có thể bị chặn bởi trình duyệt)
-            audio.play().then(() => {
+            console.log('Muted autoplay succeeded.');
+            // On first user gesture, unmute and set volume
+            const onFirstGesture = () => {
+                audio.muted = false;
+                audio.volume = 0.5;
+                audio.play().catch(()=>{ /* ignore */ });
                 isPlaying = true;
-                // playBtn.innerHTML = '⏸️';
-            }).catch(error => {
-                console.log('Tự động phát nhạc bị chặn:', error);
-                isPlaying = false;
-                // playBtn.innerHTML = '▶️';
-            });
+                window.removeEventListener('pointerdown', onFirstGesture, true);
+                window.removeEventListener('keydown', onFirstGesture, true);
+                window.removeEventListener('touchstart', onFirstGesture, true);
+            };
+            window.addEventListener('pointerdown', onFirstGesture, true);
+            window.addEventListener('keydown', onFirstGesture, true);
+            window.addEventListener('touchstart', onFirstGesture, true);
+        }).catch(error => {
+            // autoplay with sound was blocked; wait for user gesture to start playback
+            console.log('Autoplay blocked, will wait for user gesture:', error);
+            const startOnGesture = () => {
+                audio.muted = false;
+                audio.volume = 0.5;
+                audio.play().then(() => {
+                    isPlaying = true;
+                }).catch(err => {
+                    console.log('Play still blocked after gesture:', err);
+                });
+                window.removeEventListener('pointerdown', startOnGesture, true);
+                window.removeEventListener('keydown', startOnGesture, true);
+                window.removeEventListener('touchstart', startOnGesture, true);
+            };
+            window.addEventListener('pointerdown', startOnGesture, true);
+            window.addEventListener('keydown', startOnGesture, true);
+            window.addEventListener('touchstart', startOnGesture, true);
         });
 
-        // Cập nhật thông tin bài hát khi chuyển bài
+        // handle track end
         audio.addEventListener('ended', function() {
             currentSongIndex = (currentSongIndex + 1) % songs.length;
             updateSong();
         });
+
+        // Remove the previous window.load autoplay attempt (handled above)
     }
 
     // Khởi tạo tất cả
