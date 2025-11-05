@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Mời em đi ăn mì chua cay</title>
+    <title>Mời em đi cà phê chiều tà </title>
     <style>
         * {
             margin: 0;
@@ -121,6 +121,76 @@
             font-size: 2.2rem;
             color: rgba(232, 67, 147, 0.7);
             animation: float 6s ease-in-out infinite;
+        }
+
+        /* Music player styles */
+        .music-player {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            z-index: 1000;
+            background: rgba(255, 255, 255, 0.9);
+            border-radius: 50px;
+            padding: 10px 15px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        /* Override: hide visible music controls UI */
+        .music-player {
+            display: none !important;
+        }
+
+        .music-controls {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .music-btn {
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: #e84393;
+            padding: 5px;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+            box-shadow: none;
+            min-width: auto;
+        }
+
+        .music-btn:hover {
+            background: rgba(232, 67, 147, 0.1);
+            transform: scale(1.1);
+        }
+
+        .volume-control {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .volume-slider {
+            width: 80px;
+            cursor: pointer;
+        }
+
+        .music-info {
+            font-size: 0.9rem;
+            color: #333;
+            margin-right: 5px;
+            max-width: 150px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
         }
 
         @keyframes heartbeat {
@@ -393,6 +463,13 @@
                 width: 400px;
                 grid-template-columns: repeat(4, 1fr);
             }
+
+            .music-player {
+                bottom: 10px;
+                right: 10px;
+                left: 10px;
+                justify-content: center;
+            }
         }
 
         @media (max-width: 600px) {
@@ -430,6 +507,18 @@
             .puzzle-piece {
                 background-size: 260px 260px;
             }
+
+            .music-player {
+                padding: 8px 12px;
+            }
+
+            .music-info {
+                display: none;
+            }
+
+            .volume-control {
+                display: none;
+            }
         }
     </style>
 </head>
@@ -438,7 +527,7 @@
 <div class="container" id="main-page">
     <h1>Gửi Em Yêu ❤️</h1>
     <div class="heart">♥</div>
-    <p class="message">Em có muốn đi ăn mì chua cay với anh vào tối thứ 5 không bấy bé?</p>
+    <p class="message">Em có muốn đi cà phê  với anh vào  thứ 5 không bấy bé?</p>
     <div class="buttons">
         <button id="yes-btn">CÓ</button>
         <button id="no-btn">KHÔNG</button>
@@ -486,8 +575,30 @@
     </div>
 </div>
 
+<!-- Music Player -->
+<div class="music-player" id="music-player">
+    <div class="music-info" id="music-info">Nhạc nền</div>
+    <div class="music-controls">
+        <button class="music-btn" id="prev-btn">⏮</button>
+        <button class="music-btn" id="play-btn">▶️</button>
+        <button class="music-btn" id="next-btn">⏭</button>
+        <div class="volume-control">
+            <button class="music-btn" id="mute-btn">🔊</button>
+            <input type="range" min="0" max="1" step="0.1" value="0.5" class="volume-slider" id="volume-slider">
+        </div>
+    </div>
+</div>
+
 <!-- Hiệu ứng trái tim bay -->
 <div class="floating-hearts" id="floating-hearts"></div>
+
+<!-- Audio Element (enable autoplay / preload) -->
+<audio id="background-music" loop autoplay preload="auto" playsinline>
+    <!-- Thay đổi đường dẫn file nhạc tại đây -->
+    <source src="nhac.mp3" type="audio/mpeg">
+    <source src="nhac.ogg" type="audio/ogg">
+    Trình duyệt của bạn không hỗ trợ phát nhạc.
+</audio>
 
 <script>
     // Tạo hiệu ứng trái tim bay
@@ -889,12 +1000,97 @@
         }
     }
 
-    // Khởi tạo trang
+    // Xử lý nhạc nền
+    function setupMusicPlayer() {
+        const audio = document.getElementById('background-music');
+        // const playBtn = document.getElementById('play-btn');
+        // const prevBtn = document.getElementById('prev-btn');
+        // const nextBtn = document.getElementById('next-btn');
+        // const muteBtn = document.getElementById('mute-btn');
+        // const volumeSlider = document.getElementById('volume-slider');
+        // const musicInfo = document.getElementById('music-info');
+
+        let isPlaying = false;
+
+        const songs = [
+            { src: 'nhac.mp3', name: 'Nhạc tình yêu' },
+        ];
+        let currentSongIndex = 0;
+
+        function updateSong() {
+            audio.src = songs[currentSongIndex].src;
+            // musicInfo.textContent = songs[currentSongIndex].name;
+            if (isPlaying) {
+                audio.play().catch(()=>{ /* ignore */ });
+            }
+        }
+
+        // Ensure audio settings for autoplay attempt
+        audio.autoplay = true;
+        audio.preload = 'auto';
+        audio.volume = 0.5;
+        audio.muted = false;
+
+        // Try to play immediately (will be caught if browser blocks autoplay)
+        audio.play().then(() => {
+            isPlaying = true;
+            // If you had a play/pause UI, update it here (UI is hidden)
+        }).catch(error => {
+            console.log('Tự động phát nhạc bị chặn:', error);
+            isPlaying = false;
+        });
+
+        // Nút bài trước
+        // prevBtn.addEventListener('click', function() {
+        //     currentSongIndex = (currentSongIndex - 1 + songs.length) % songs.length;
+        //     updateSong();
+        // });
+
+        // Nút bài tiếp theo
+        // nextBtn.addEventListener('click', function() {
+        //     currentSongIndex = (currentSongIndex + 1) % songs.length;
+        //     updateSong();
+        // });
+
+        // Nút tắt tiếng
+        // muteBtn.addEventListener('click', function() {
+        //     audio.muted = !audio.muted;
+        //     muteBtn.innerHTML = audio.muted ? '🔇' : '🔊';
+        // });
+
+        // Điều chỉnh âm lượng
+        // volumeSlider.addEventListener('input', function() {
+        //     audio.volume = volumeSlider.value;
+        // });
+
+        // Tự động phát nhạc khi trang được tải
+        window.addEventListener('load', function() {
+            audio.volume = 0.5;
+            // Tự động phát nhạc (có thể bị chặn bởi trình duyệt)
+            audio.play().then(() => {
+                isPlaying = true;
+                // playBtn.innerHTML = '⏸️';
+            }).catch(error => {
+                console.log('Tự động phát nhạc bị chặn:', error);
+                isPlaying = false;
+                // playBtn.innerHTML = '▶️';
+            });
+        });
+
+        // Cập nhật thông tin bài hát khi chuyển bài
+        audio.addEventListener('ended', function() {
+            currentSongIndex = (currentSongIndex + 1) % songs.length;
+            updateSong();
+        });
+    }
+
+    // Khởi tạo tất cả
     document.addEventListener('DOMContentLoaded', function() {
         createFloatingHearts();
         setupNoButton();
         setupYesButton();
         setupNextButton();
+        setupMusicPlayer();
     });
 </script>
 </body>
