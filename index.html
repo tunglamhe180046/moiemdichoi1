@@ -1,0 +1,855 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mời em đi ăn mì chua cay</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, #ff9a9e 0%, #fad0c4 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .container {
+            text-align: center;
+            padding: 50px 40px;
+            background-color: rgba(255, 255, 255, 0.95);
+            border-radius: 25px;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.2);
+            max-width: 650px;
+            width: 90%;
+            position: relative;
+            z-index: 1;
+        }
+
+        h1 {
+            color: #e84393;
+            margin-bottom: 25px;
+            font-size: 2.8rem;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .heart {
+            color: #e84393;
+            font-size: 3.5rem;
+            margin: 25px 0;
+            animation: heartbeat 1.5s infinite;
+        }
+
+        .message {
+            font-size: 2rem;
+            color: #333;
+            margin-bottom: 40px;
+            line-height: 1.5;
+            font-weight: 500;
+        }
+
+        .buttons {
+            display: flex;
+            justify-content: center;
+            gap: 30px;
+            margin-top: 40px;
+            position: relative;
+            flex-wrap: wrap;
+        }
+
+        button {
+            padding: 18px 50px;
+            font-size: 1.8rem;
+            border: none;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+            font-weight: bold;
+            min-width: 180px;
+        }
+
+        #yes-btn {
+            background: linear-gradient(to right, #6c5ce7, #a29bfe);
+            color: white;
+            position: relative;
+            z-index: 10;
+        }
+
+        #yes-btn:hover {
+            transform: scale(1.08);
+            box-shadow: 0 12px 25px rgba(108, 92, 231, 0.4);
+        }
+
+        #no-btn {
+            background: linear-gradient(to right, #fd79a8, #fdc2d7);
+            color: white;
+            position: relative;
+            transition: all 0.5s ease;
+        }
+
+        #next-btn {
+            background: linear-gradient(to right, #00b894, #55efc4);
+            color: white;
+            margin-top: 20px;
+        }
+
+        #next-btn:hover {
+            transform: scale(1.05);
+            box-shadow: 0 10px 25px rgba(0, 184, 148, 0.4);
+        }
+
+        .floating-hearts {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            top: 0;
+            left: 0;
+            pointer-events: none;
+        }
+
+        .heart-float {
+            position: absolute;
+            font-size: 2.2rem;
+            color: rgba(232, 67, 147, 0.7);
+            animation: float 6s ease-in-out infinite;
+        }
+
+        @keyframes heartbeat {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.15); }
+            100% { transform: scale(1); }
+        }
+
+        @keyframes float {
+            0% {
+                transform: translateY(100vh) rotate(0deg);
+                opacity: 0;
+            }
+            10% {
+                opacity: 1;
+            }
+            90% {
+                opacity: 1;
+            }
+            100% {
+                transform: translateY(-100px) rotate(360deg);
+                opacity: 0;
+            }
+        }
+
+        /* Trang cảm ơn */
+        .thank-you-page {
+            display: none;
+            text-align: center;
+            padding: 50px 40px;
+            background-color: rgba(255, 255, 255, 0.95);
+            border-radius: 25px;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.2);
+            max-width: 650px;
+            width: 90%;
+        }
+
+        .thank-you-page h1 {
+            color: #6c5ce7;
+            margin-bottom: 25px;
+        }
+
+        .thank-you-page p {
+            font-size: 1.8rem;
+            color: #333;
+            margin-bottom: 30px;
+            line-height: 1.6;
+        }
+
+        /* Trang ghép hình */
+        .puzzle-page {
+            display: none;
+            text-align: center;
+            padding: 30px 20px;
+            background-color: rgba(255, 255, 255, 0.95);
+            border-radius: 25px;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.2);
+            max-width: 900px;
+            width: 95%;
+        }
+
+        .puzzle-page h1 {
+            color: #e84393;
+            margin-bottom: 20px;
+        }
+
+        .upload-section {
+            margin: 20px 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .remove-btn {
+            display: none;
+            padding: 10px 18px;
+            background: linear-gradient(to right, #ff7675, #fd79a8);
+            color: white;
+            border-radius: 50px;
+            cursor: pointer;
+            font-size: 1.0rem;
+            border: none;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.15);
+        }
+
+        #real-image-upload {
+            display: none;
+        }
+
+        .upload-label {
+            display: inline-block;
+            padding: 12px 25px;
+            background: linear-gradient(to right, #fd79a8, #fdc2d7);
+            color: white;
+            border-radius: 50px;
+            cursor: pointer;
+            font-size: 1.2rem;
+            font-weight: bold;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+            transition: all 0.3s ease;
+        }
+
+        .upload-label:hover {
+            transform: scale(1.05);
+        }
+
+        .puzzle-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin: 20px 0;
+        }
+
+        .puzzle-area {
+            display: flex;
+            justify-content: space-between;
+            width: 100%;
+            max-width: 800px;
+            margin: 20px 0;
+            gap: 20px;
+        }
+
+        .puzzle-pieces {
+            width: 260px;
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            grid-auto-rows: 1fr; /* Thêm dòng này */
+            gap: 10px;
+            padding: 15px;
+            background: rgba(253, 121, 168, 0.1);
+            border-radius: 15px;
+            border: 2px dashed #fd79a8;
+            /* Thêm 2 dòng dưới đây */
+            align-items: start;
+            justify-items: center;
+        }
+
+        .puzzle-board {
+            width: 300px;
+            height: 300px;
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            grid-template-rows: repeat(3, 1fr);
+            gap: 2px;
+            border: 3px solid #fd79a8;
+            border-radius: 10px;
+            overflow: hidden;
+            background-color: #f8f8f8;
+        }
+
+        .puzzle-slot {
+            background-color: #f0f0f0;
+            border: 1px dashed #ccc;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .puzzle-slot.hovered {
+            background-color: #ffe6ee;
+            border: 2px dashed #fd79a8;
+        }
+
+        .puzzle-slot.filled {
+            background-color: transparent;
+            border: 1px solid transparent;
+        }
+
+        .puzzle-piece {
+            width: 100%;
+            height: 0;
+            padding-bottom: 100%; /* Tạo tỷ lệ 1:1 */
+            background-size: 300px 300px;
+            cursor: grab;
+            transition: all 0.3s ease;
+            border-radius: 5px;
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.2);
+            position: relative; /* Thêm dòng này */
+        }
+
+        .puzzle-piece.dragging {
+            opacity: 0.7;
+            transform: scale(1.05);
+            z-index: 10;
+        }
+
+        .puzzle-piece.placed {
+            cursor: default;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+
+        .original-image {
+            width: 200px;
+            height: 200px;
+            object-fit: cover;
+            border-radius: 10px;
+            margin: 15px 0;
+            border: 3px solid #fd79a8;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        .puzzle-controls {
+            margin: 20px 0;
+        }
+
+        #reset-btn {
+            background: linear-gradient(to right, #6c5ce7, #a29bfe);
+            color: white;
+            padding: 12px 25px;
+            font-size: 1.2rem;
+        }
+
+        #reset-btn:hover {
+            transform: scale(1.05);
+        }
+
+        .completion-message {
+            display: none;
+            margin-top: 20px;
+            padding: 15px;
+            background: linear-gradient(to right, #00b894, #55efc4);
+            color: white;
+            border-radius: 10px;
+            font-size: 1.5rem;
+            font-weight: bold;
+        }
+
+        .firework {
+            position: fixed;
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            pointer-events: none;
+            z-index: 1000;
+        }
+
+        /* Responsive */
+        @media (max-width: 850px) {
+            .puzzle-area {
+                flex-direction: column;
+                align-items: center;
+            }
+
+            .puzzle-pieces {
+                width: 400px;
+                grid-template-columns: repeat(4, 1fr);
+            }
+        }
+
+        @media (max-width: 600px) {
+            .container {
+                padding: 30px 20px;
+            }
+
+            h1 {
+                font-size: 2.2rem;
+            }
+
+            .message {
+                font-size: 1.6rem;
+            }
+
+            button {
+                padding: 15px 35px;
+                font-size: 1.5rem;
+                min-width: 140px;
+            }
+
+            .buttons {
+                gap: 20px;
+            }
+
+            .puzzle-board {
+                width: 260px;
+                height: 260px;
+            }
+
+            .puzzle-pieces {
+                width: 260px;
+            }
+
+            .puzzle-piece {
+                background-size: 260px 260px;
+            }
+        }
+    </style>
+</head>
+<body>
+<!-- Trang chính -->
+<div class="container" id="main-page">
+    <h1>Gửi Em Yêu ❤️</h1>
+    <div class="heart">♥</div>
+    <p class="message">Em có muốn đi ăn mì chua cay với anh vào tối thứ 5 không bấy bé?</p>
+    <div class="buttons">
+        <button id="yes-btn">CÓ</button>
+        <button id="no-btn">KHÔNG</button>
+    </div>
+</div>
+
+<!-- Trang cảm ơn -->
+<div class="container thank-you-page" id="thank-you-page">
+    <h1>Cảm Ơn Em!</h1>
+    <div class="heart">♥</div>
+    <p>Cảm ơn em bấy bé! Anh rất vui vì em đã đồng ý!</p>
+    <p>Hẹn gặp em tối thứ 5 nhé! ❤️</p>
+    <button id="next-btn">TIẾP THEO</button>
+</div>
+
+<!-- Trang ghép hình -->
+<div class="container puzzle-page" id="puzzle-page">
+    <h1>Ghép Hình Kỷ Niệm Của Chúng Ta</h1>
+    <div class="upload-section">
+        <input type="file" id="real-image-upload" accept="image/*">
+        <label for="real-image-upload" class="upload-label">Chọn ảnh của chúng ta</label>
+        <button id="remove-image-btn" class="remove-btn">Xóa Ảnh</button>
+    </div>
+    <div class="puzzle-container">
+        <img id="original-image" class="original-image" src="img.png" alt="Ảnh kỷ niệm">
+        <div class="puzzle-area">
+            <div class="puzzle-pieces" id="puzzle-pieces">
+                <!-- Các mảnh ghép sẽ được tạo ở đây -->
+            </div>
+            <div class="puzzle-board" id="puzzle-board">
+                <!-- Các ô trống để kéo thả -->
+            </div>
+        </div>
+        <div class="puzzle-controls">
+            <button id="reset-btn">Làm Lại</button>
+        </div>
+        <div class="completion-message" id="completion-message">
+            Chúc mừng em! Chúng ta đã hoàn thành bức hình tình yêu ❤️
+        </div>
+    </div>
+</div>
+
+<!-- Hiệu ứng trái tim bay -->
+<div class="floating-hearts" id="floating-hearts"></div>
+
+<script>
+    // Tạo hiệu ứng trái tim bay
+    function createFloatingHearts() {
+        const heartsContainer = document.getElementById('floating-hearts');
+        const heartCount = 20;
+
+        for (let i = 0; i < heartCount; i++) {
+            const heart = document.createElement('div');
+            heart.innerHTML = '♥';
+            heart.classList.add('heart-float');
+
+            // Vị trí ngẫu nhiên
+            const left = Math.random() * 100;
+            const delay = Math.random() * 5;
+            const duration = 5 + Math.random() * 5;
+
+            heart.style.left = `${left}%`;
+            heart.style.animationDelay = `${delay}s`;
+            heart.style.animationDuration = `${duration}s`;
+
+            heartsContainer.appendChild(heart);
+        }
+    }
+
+    // Xử lý nút "Không"
+    function setupNoButton() {
+        const noBtn = document.getElementById('no-btn');
+        const buttonsContainer = document.querySelector('.buttons');
+        let moveCount = 0;
+
+        noBtn.addEventListener('mouseover', function() {
+            // Tăng số lần di chuyển
+            moveCount++;
+
+            // Tính toán vị trí mới ngẫu nhiên
+            const containerRect = buttonsContainer.getBoundingClientRect();
+            const btnRect = noBtn.getBoundingClientRect();
+
+            // Giới hạn di chuyển trong container
+            const maxX = containerRect.width - btnRect.width;
+            const maxY = containerRect.height - btnRect.height;
+
+            const randomX = Math.floor(Math.random() * maxX);
+            const randomY = Math.floor(Math.random() * maxY);
+
+            // Di chuyển nút đến vị trí mới
+            noBtn.style.transform = `translate(${randomX}px, ${randomY}px)`;
+
+            // Thay đổi kích thước nút sau một số lần di chuyển
+            if (moveCount > 3) {
+                const scale = 0.9 - (moveCount * 0.05);
+                noBtn.style.transform = `translate(${randomX}px, ${randomY}px) scale(${scale > 0.5 ? scale : 0.5})`;
+            }
+
+            // Thay đổi màu sắc sau một số lần di chuyển
+            if (moveCount > 5) {
+                noBtn.style.background = 'linear-gradient(to right, #ff7675, #fd79a8)';
+            }
+        });
+
+        // Khi click vào nút "Không"
+        noBtn.addEventListener('click', function() {
+            // Di chuyển nút đến vị trí mới ngay lập thúc
+            const containerRect = buttonsContainer.getBoundingClientRect();
+            const btnRect = noBtn.getBoundingClientRect();
+
+            const maxX = containerRect.width - btnRect.width;
+            const maxY = containerRect.height - btnRect.height;
+
+            const randomX = Math.floor(Math.random() * maxX);
+            const randomY = Math.floor(Math.random() * maxY);
+
+            noBtn.style.transform = `translate(${randomX}px, ${randomY}px)`;
+
+            // Thêm hiệu ứng nhấp nháy
+            noBtn.style.animation = 'flash 0.5s';
+            setTimeout(() => {
+                noBtn.style.animation = '';
+            }, 500);
+        });
+    }
+
+    // Xử lý nút "Có"
+    function setupYesButton() {
+        const yesBtn = document.getElementById('yes-btn');
+        const mainPage = document.getElementById('main-page');
+        const thankYouPage = document.getElementById('thank-you-page');
+
+        yesBtn.addEventListener('click', function() {
+            mainPage.style.display = 'none';
+            thankYouPage.style.display = 'block';
+
+            // Thêm hiệu ứng pháo hoa
+            createFireworks();
+        });
+    }
+
+    // Xử lý nút "Tiếp theo"
+    function setupNextButton() {
+        const nextBtn = document.getElementById('next-btn');
+        const thankYouPage = document.getElementById('thank-you-page');
+        const puzzlePage = document.getElementById('puzzle-page');
+
+        nextBtn.addEventListener('click', function() {
+            thankYouPage.style.display = 'none';
+            puzzlePage.style.display = 'block';
+            initializePuzzle();
+        });
+    }
+
+    // Trò chơi ghép hình kéo thả (3x3)
+    let placedPieces = 0;
+    const GRID = 3;               // 3 columns x 3 rows
+    const totalPieces = GRID * GRID;
+    const BOARD_PX = 300;         // pixel size used for background calculations (matches CSS)
+    let currentImage = 'img.png';
+
+    function initializePuzzle() {
+        const puzzlePiecesContainer = document.getElementById('puzzle-pieces');
+        const puzzleBoard = document.getElementById('puzzle-board');
+        const resetBtn = document.getElementById('reset-btn');
+        const imageUpload = document.getElementById('real-image-upload');
+        const originalImage = document.getElementById('original-image');
+        const removeBtn = document.getElementById('remove-image-btn');
+
+        // Xử lý upload ảnh
+        imageUpload.onchange = function(e) {
+            const file = e.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(event) {
+                    currentImage = event.target.result;
+                    originalImage.src = currentImage;
+                    originalImage.style.display = 'block';
+                    // show remove button when a custom image is used
+                    removeBtn.style.display = 'inline-block';
+                    createPuzzlePieces(currentImage);
+                };
+                reader.readAsDataURL(file);
+            }
+        };
+
+        // Remove uploaded image and revert to default
+        removeBtn.onclick = function() {
+            // reset to default image
+            currentImage = 'img.png';
+            originalImage.src = currentImage;
+            // clear file input so user can re-upload same file if desired
+            imageUpload.value = '';
+            // hide remove button
+            removeBtn.style.display = 'none';
+            // recreate pieces with default image
+            createPuzzlePieces(currentImage);
+        };
+
+        // Tạo puzzle với ảnh mặc định
+        originalImage.onload = function() {
+            // hide remove button when default image is shown
+            if (currentImage === 'img.png') removeBtn.style.display = 'none';
+            createPuzzlePieces(currentImage);
+        };
+
+        // Nếu ảnh đã được cache, tạo puzzle ngay
+        if (originalImage.complete) {
+            if (currentImage === 'img.png' && removeBtn) removeBtn.style.display = 'none';
+            createPuzzlePieces(currentImage);
+        }
+
+        function createPuzzlePieces(imageSrc) {
+            console.log('Creating puzzle with image:', imageSrc);
+
+            // Xóa các phần tử cũ
+            puzzlePiecesContainer.innerHTML = '';
+            puzzleBoard.innerHTML = '';
+            placedPieces = 0;
+            document.getElementById('completion-message').style.display = 'none';
+
+            // ensure remove button visibility matches current image
+            if (removeBtn) removeBtn.style.display = (imageSrc && imageSrc !== 'img.png') ? 'inline-block' : 'none';
+
+            // Tạo các ô trống trên bảng
+            for (let i = 0; i < totalPieces; i++) {
+                const slot = document.createElement('div');
+                slot.classList.add('puzzle-slot');
+                slot.dataset.index = i;
+
+                // Sự kiện kéo thả
+                slot.addEventListener('dragover', handleDragOver);
+                slot.addEventListener('drop', handleDrop);
+                slot.addEventListener('dragenter', handleDragEnter);
+                slot.addEventListener('dragleave', handleDragLeave);
+
+                puzzleBoard.appendChild(slot);
+            }
+
+            // Tạo các mảnh ghép
+            const pieceIndices = Array.from({length: totalPieces}, (_, i) => i);
+            shuffleArray(pieceIndices);
+
+            pieceIndices.forEach(index => {
+                const piece = document.createElement('div');
+                piece.classList.add('puzzle-piece');
+                piece.draggable = true;
+                piece.dataset.index = index;
+
+                // TÍNH TOÁN VỊ TRÍ BACKGROUND CHO TỪNG MẢNH GHÉP (dựa trên GRID)
+                const row = Math.floor(index / GRID);
+                const col = index % GRID;
+                const pieceSizePx = BOARD_PX / GRID;
+
+                piece.style.backgroundImage = `url("${imageSrc}")`;
+                piece.style.backgroundPosition = `-${col * pieceSizePx}px -${row * pieceSizePx}px`;
+                piece.style.backgroundSize = `${BOARD_PX}px ${BOARD_PX}px`;
+
+                // Sự kiện kéo
+                piece.addEventListener('dragstart', handleDragStart);
+                piece.addEventListener('dragend', handleDragEnd);
+                // double-click to remove from slot back to tray (explicitly clear that slot and adjust count)
+                piece.addEventListener('dblclick', function() {
+                    const parentSlot = this.parentElement && this.parentElement.classList.contains('puzzle-slot') ? this.parentElement : null;
+                    if (parentSlot) {
+                        const idx = parentSlot.dataset.index;
+                        // move back to tray
+                        puzzlePiecesContainer.appendChild(this);
+                        this.classList.remove('placed');
+                        // clear the specific slot state
+                        parentSlot.classList.remove('filled');
+                        // decrement placed count safely
+                        placedPieces = Math.max(0, placedPieces - 1);
+                        document.getElementById('completion-message').style.display = 'none';
+                    }
+                });
+
+                puzzlePiecesContainer.appendChild(piece);
+            });
+
+            console.log('Puzzle pieces created:', puzzlePiecesContainer.children.length);
+        }
+
+        function handleDragStart(e) {
+            // store index and explicit source: 'puzzle-pieces' or 'puzzle-slot-<i>'
+            const parent = e.target.parentElement;
+            let from = '';
+            if (parent) {
+                if (parent.id === 'puzzle-pieces') from = 'puzzle-pieces';
+                else if (parent.classList && parent.classList.contains('puzzle-slot')) from = 'puzzle-slot-' + parent.dataset.index;
+                else if (parent.id === 'puzzle-board') from = 'puzzle-board';
+            }
+            const payload = JSON.stringify({ index: e.target.dataset.index, from });
+            e.dataTransfer.setData('text/plain', payload);
+            e.target.classList.add('dragging');
+            // keep draggable enabled for placed pieces so they can be removed/moved
+        }
+
+        function handleDragEnd(e) {
+            e.target.classList.remove('dragging');
+        }
+
+        function handleDragOver(e) {
+            e.preventDefault();
+        }
+
+        function handleDragEnter(e) {
+            e.preventDefault();
+            const slot = e.target.closest('.puzzle-slot');
+            if (slot && slot.children.length === 0) slot.classList.add('hovered');
+        }
+
+        function handleDragLeave(e) {
+            const slot = e.target.closest('.puzzle-slot');
+            if (slot) slot.classList.remove('hovered');
+        }
+
+        function handleDrop(e) {
+            e.preventDefault();
+            const slot = e.target.closest('.puzzle-slot');
+            if (!slot || slot.children.length > 0) return;
+            slot.classList.remove('hovered');
+
+            const draggingPiece = document.querySelector('.puzzle-piece.dragging');
+            if (!draggingPiece) return;
+
+            // parse source info
+            let source = '';
+            try { source = JSON.parse(e.dataTransfer.getData('text/plain') || '{}').from || ''; } catch (err) { source = ''; }
+
+            // If coming from another slot, clear that specific slot's filled state
+            if (source.startsWith('puzzle-slot-')) {
+                const prevIdx = source.split('-').pop();
+                const prevSlot = puzzleBoard.querySelector(`.puzzle-slot[data-index="${prevIdx}"]`);
+                if (prevSlot) prevSlot.classList.remove('filled');
+            }
+
+            // place piece into target slot
+            slot.appendChild(draggingPiece);
+            draggingPiece.classList.remove('dragging');
+            draggingPiece.classList.add('placed');
+            slot.classList.add('filled');
+
+            // increment placed count only when coming from tray (not when moving between slots)
+            if (source === 'puzzle-pieces') {
+                placedPieces = Math.min(totalPieces, placedPieces + 1);
+            }
+
+            // Completion check
+            if (placedPieces === totalPieces) {
+                document.getElementById('completion-message').style.display = 'block';
+                createFireworks();
+            } else {
+                document.getElementById('completion-message').style.display = 'none';
+            }
+        }
+
+        // Allow dropping pieces back to the tray
+        puzzlePiecesContainer.addEventListener('dragover', function(e) { e.preventDefault(); });
+        puzzlePiecesContainer.addEventListener('drop', function(e) {
+            e.preventDefault();
+            const draggingPiece = document.querySelector('.puzzle-piece.dragging');
+            if (!draggingPiece) return;
+            // find explicit source
+            let from = '';
+            try { from = JSON.parse(e.dataTransfer.getData('text/plain') || '{}').from || ''; } catch (err) { from = ''; }
+
+            // append back to tray
+            puzzlePiecesContainer.appendChild(draggingPiece);
+            draggingPiece.classList.remove('dragging', 'placed');
+
+            // If it was removed from a specific slot, clear that slot and decrement placed count
+            if (from.startsWith('puzzle-slot-')) {
+                const prevIdx = from.split('-').pop();
+                const prevSlot = puzzleBoard.querySelector(`.puzzle-slot[data-index="${prevIdx}"]`);
+                if (prevSlot) prevSlot.classList.remove('filled');
+                placedPieces = Math.max(0, placedPieces - 1);
+                document.getElementById('completion-message').style.display = 'none';
+            }
+        });
+
+        // Sự kiện nút làm lại
+        resetBtn.onclick = function() {
+            createPuzzlePieces(currentImage);
+        };
+    }
+
+    function shuffleArray(array) {
+        for (let i = array.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [array[i], array[j]] = [array[j], array[i]];
+        }
+        return array;
+    }
+
+    // Tạo hiệu ứng pháo hoa
+    function createFireworks() {
+        const colors = ['#ff0000', '#00ff00', '#0000ff', '#ffff00', '#ff00ff', '#00ffff', '#ff9a00', '#9b59b6'];
+        const container = document.body;
+
+        for (let i = 0; i < 80; i++) {
+            setTimeout(() => {
+                const firework = document.createElement('div');
+                firework.classList.add('firework');
+                firework.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+                firework.style.left = `${Math.random() * 100}%`;
+                firework.style.top = `${Math.random() * 100}%`;
+                firework.style.boxShadow = `0 0 15px 3px ${firework.style.backgroundColor}`;
+
+                container.appendChild(firework);
+
+                // Animation
+                firework.animate([
+                    { transform: 'scale(1)', opacity: 1 },
+                    { transform: 'scale(4)', opacity: 0 }
+                ], {
+                    duration: 1200,
+                    easing: 'ease-out'
+                });
+
+                // Xóa sau khi animation kết thúc
+                setTimeout(() => {
+                    firework.remove();
+                }, 1200);
+            }, i * 80);
+        }
+    }
+
+    // Khởi tạo trang
+    document.addEventListener('DOMContentLoaded', function() {
+        createFloatingHearts();
+        setupNoButton();
+        setupYesButton();
+        setupNextButton();
+    });
+</script>
+</body>
+</html>
